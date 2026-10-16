@@ -1,0 +1,156 @@
+1. Subsets
+import java.util.*;
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, 0, new ArrayList<>(), result);
+        return result;
+    }
+    void backtrack(int[] nums, int index,
+                   List<Integer> current,
+                   List<List<Integer>> result) {
+        result.add(new ArrayList<>(current));
+        for (int i = index; i < nums.length; i++) {
+            current.add(nums[i]);
+            backtrack(nums, i + 1, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+}
+
+2. Permutations
+import java.util.*;
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, new ArrayList<>(), result);
+        return result;
+    }
+    void backtrack(int[] nums, List<Integer> current,
+                   List<List<Integer>> result) {
+        if (current.size() == nums.length) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+        for (int num : nums) {
+            if (current.contains(num))
+                continue;
+            current.add(num);
+            backtrack(nums, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+}
+
+3. Combination Sum
+import java.util.*;
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates,
+                                               int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(candidates, target, 0,
+                  new ArrayList<>(), result);
+        return result;
+    }
+    void backtrack(int[] candidates, int target, int index,
+                   List<Integer> current,
+                   List<List<Integer>> result) {
+        if (target == 0) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+        if (target < 0)
+            return;
+        for (int i = index; i < candidates.length; i++) {
+            current.add(candidates[i]);
+            backtrack(candidates, target - candidates[i],
+                      i, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+}
+
+4. N-Queens
+import java.util.*;
+class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<>();
+        char[][] board = new char[n][n];
+        for (char[] row : board)
+            Arrays.fill(row, '.');
+        backtrack(0, board, result, n);
+        return result;
+    }
+    void backtrack(int row, char[][] board,
+                   List<List<String>> result, int n) {
+        if (row == n) {
+            List<String> solution = new ArrayList<>();
+            for (char[] r : board)
+                solution.add(new String(r));
+            result.add(solution);
+            return;
+        }
+        for (int col = 0; col < n; col++) {
+            if (isSafe(row, col, board, n)) {
+                board[row][col] = 'Q';
+                backtrack(row + 1, board, result, n);
+                board[row][col] = '.';
+            }
+        }
+    }
+    boolean isSafe(int row, int col, char[][] board, int n) {
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q')
+                return false;
+        }
+        for (int i = row - 1, j = col - 1;
+             i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q')
+                return false;
+        }
+        for (int i = row - 1, j = col + 1;
+             i >= 0 && j < n; i--, j++) {
+            if (board[i][j] == 'Q')
+                return false;
+        }
+        return true;
+    }
+}
+
+5. Sudoku Solver
+class Solution {
+    public void solveSudoku(char[][] board) {
+        solve(board);
+    }
+    boolean solve(char[][] board) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (board[row][col] == '.') {
+                    for (char num = '1'; num <= '9'; num++) {
+                        if (isValid(board, row, col, num)) {
+                            board[row][col] = num;
+                            if (solve(board))
+                                return true;
+                            board[row][col] = '.';
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    boolean isValid(char[][] board, int row, int col, char num) {
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == num ||
+                board[i][col] == num) {
+                return false;
+            }
+            int boxRow = 3 * (row / 3) + i / 3;
+            int boxCol = 3 * (col / 3) + i % 3;
+            if (board[boxRow][boxCol] == num)
+                return false;
+        }
+        return true;
+    }
+}
